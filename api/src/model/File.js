@@ -15,15 +15,11 @@ class File {
 
   initWithObject(object) {
     this.model.name = _.get(object, 'name');
-    this.model.orginalName = _.get(object, 'originalName');
-    this.model.mimeType = _.get(object, 'mimeType');
+    this.model.orginalName = _.get(object, 'originalname');
+    this.model.mimeType = _.get(object, 'mimetype');
     this.model.filename = _.get(object, 'filename');
     this.model.size = _.get(object, 'size');
     this.model.create = Date.now();
-    console.log('model: ', this.model)
-  }
-
-  toJson() {
     return this.model;
   }
 
@@ -32,6 +28,11 @@ class File {
     db.collection('files').insertOne(this.model, (err, res) => {
       return (callback, res);
     });
+  }
+
+  toJson(validModel) {
+    console.log('returning: ', validModel)
+    return validModel;
   }
 }
 

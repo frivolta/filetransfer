@@ -1,7 +1,7 @@
 /** @format */
 import path from 'path';
-/* import _ from 'lodash';
-import File from './model/File'; */
+import _ from 'lodash';
+import File from './model/File';
 
 class AppRouter {
   constructor(app) {
@@ -24,10 +24,16 @@ class AppRouter {
     //POST '/api/upload' @public 
     //Upload routing
     app.post("/api/upload", upload.array('files'), (req, res, next) => {
-      const files = req.files;
-      return res.json({
-        files
+      const files = _.get(req, 'files', []);
+      let fileModels = [];
+      _.each(files, fileObject => {
+        const newFile = new File(app).initWithObject(fileObject);
+        fileModels.push(newFile);
       })
+      return res.json({
+        files: fileModels
+      })
+
     })
 
     //GET '/api/download/:token'
