@@ -24,25 +24,13 @@ class AppRouter {
     //POST '/api/upload' @public 
     //Upload routing
     app.post("/api/upload", upload.array('files'), (req, res, next) => {
-      console.log('File uploaded: ', req.files)
+      const files = req.files;
+      return res.json({
+        files
+      })
     })
-    /*  //POST '/api/upload' @public 
-     //Upload routing
-     app.post("/api/upload", upload.array('files'), (req, res, next) => {
-       const files = _.get(req, 'files', []);
-       console.log('files: ', files)
-       let models = [];
-       //Loop files and create model
-       _.each(files, (fileObject) => {
-         const newFile = new File(app).initWithObject(fileObject).toJson();
-         models.push(newFile);
-       })
-       return res.json({
-         files
-       })
-     }); */
 
-    /* //GET '/api/download/:token'
+    //GET '/api/download/:token'
     //Download Routing
     app.get('/api/download/:name', (req, res, next) => {
       const fileName = req.params.name;
@@ -60,7 +48,21 @@ class AppRouter {
         }
       })
     })
- */
+    /*  //POST '/api/upload' @public 
+     //Upload routing
+     app.post("/api/upload", upload.array('files'), (req, res, next) => {
+       const files = _.get(req, 'files', []);
+       console.log('files: ', files)
+       let models = [];
+       //Loop files and create model
+       _.each(files, (fileObject) => {
+         const newFile = new File(app).initWithObject(fileObject).toJson();
+         models.push(newFile);
+       })
+       return res.json({
+         files
+       })
+     }); */
     console.log("The app routing init.");
   }
 }
