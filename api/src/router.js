@@ -4,12 +4,13 @@ import _ from 'lodash';
 import File from './model/File';
 
 class AppRouter {
-  constructor(app) {
+  constructor(app, db) {
     this.app = app;
+    this.db = require("../config/keys").mongoURI;
     this.setupRouters();
   }
 
-  setupRouters() {
+  setupRouters(db) {
     const app = this.app;
     const uploadDir = app.get('storageDir');
     const upload = app.get('upload');
@@ -30,6 +31,29 @@ class AppRouter {
         const newFile = new File(app).initWithObject(fileObject);
         fileModels.push(newFile);
       })
+      if (fileModels.length) {
+        console.log(this.db);
+        this.db.collection('files').insertMany(fileModels, (err, result) => {
+          if (err) {
+            return res.status(503).json({
+              error: {
+                message: err.toString()
+              }
+            })
+          }
+          console.log("saved file", err, result)
+          res.json({
+            files: fileModels
+          })
+
+        })
+      } else {
+        return res.status(503).json({
+          error: {
+            message: "Files upload is required."
+          }
+        })
+      }
       return res.json({
         files: fileModels
       })
@@ -54,21 +78,7 @@ class AppRouter {
         }
       })
     })
-    /*  //POST '/api/upload' @public 
-     //Upload routing
-     app.post("/api/upload", upload.array('files'), (req, res, next) => {
-       const files = _.get(req, 'files', []);
-       console.log('files: ', files)
-       let models = [];
-       //Loop files and create model
-       _.each(files, (fileObject) => {
-         const newFile = new File(app).initWithObject(fileObject).toJson();
-         models.push(newFile);
-       })
-       return res.json({
-         files
-       })
-     }); */
+
     console.log("The app routing init.");
   }
 }

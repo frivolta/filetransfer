@@ -55,9 +55,9 @@ const db = require("../config/keys").mongoURI;
 mongoose
   .connect(db)
   .then(() => {
-    console.log("MongoDB Connected");
+    console.log("MongoDB Connected: ", db, typeof (db));
     //Setup Router
-    new AppRouter(app);
+    new AppRouter(app, db);
   })
   .catch(err => console.log(err));
 

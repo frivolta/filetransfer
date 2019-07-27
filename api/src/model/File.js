@@ -30,10 +30,6 @@ class File {
     });
   }
 
-  toJson(validModel) {
-    console.log('returning: ', validModel)
-    return validModel;
-  }
 }
 
 export default File;
