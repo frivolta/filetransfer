@@ -5,10 +5,13 @@ import morgan from "morgan";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import multer from 'multer';
-//import AppRouter from "./router";
 import path from 'path';
 require('dotenv').config();
 
+//Import Routes Dependencies
+const fileRouter = require('./routes/api/file.routes');
+
+//Global Variables
 const PORT = 3002;
 const app = express();
 
@@ -26,6 +29,8 @@ const upload = multer({ storage: storageConfig })
 
 //End File storage config
 
+
+//Create HTTP server
 app.server = http.createServer(app);
 app.use(morgan("dev"));
 app.use(
@@ -38,9 +43,16 @@ app.use(
     limit: "50mb"
   })
 );
+
+//Setup App Middlewares
 app.set("root", __dirname);
 app.set('storageDir', storageDir);
 app.set('upload', upload)
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+//Setup Routes Middlewares
+app.use('/api', fileRouter);
 
 /**
  * MONGO DB CONNECTION
