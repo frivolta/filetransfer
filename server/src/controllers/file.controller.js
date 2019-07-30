@@ -27,7 +27,6 @@ exports.api_upload = async (req, res) => {
     if (Object.keys(files).length > 0) {
         //Loop through object and create array from object
         _.each(files, file => {
-            console.log(JSON.stringify(file))
             let fileObject = {
                 name: _.get(file, 'name'),
                 orginalName: _.get(file, 'originalname'),
@@ -48,9 +47,7 @@ exports.api_upload = async (req, res) => {
             })
         });
         res.json({
-            error: {
-                message: filesArray
-            }
+            message: filesArray
         });
     } else {
         res.json({
@@ -70,7 +67,6 @@ exports.api_download = async (req, res) => {
     const collection = await File.findOne({ _id: fileId });
     const filename = await _.get(collection, 'filename')
     const filePath = path.join(storageDir, filename);
-    console.log(JSON.stringify("Downloading: ", filePath))
     return res.download(filePath, filename, (err) => {
         if (err) {
             return res.status(404).json({
@@ -79,10 +75,11 @@ exports.api_download = async (req, res) => {
                 }
             })
         } else {
-            console.log('File is downloaded.')
+            return res.status(200).json({
+                message: "File has been downloaded"
+            })
         }
     })
-
 }
 
 //Helpers
