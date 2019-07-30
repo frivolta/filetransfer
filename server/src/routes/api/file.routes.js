@@ -29,4 +29,9 @@ router.get('/', fileController.api_test);
 // @access  Public
 router.post("/upload", upload.array('files'), fileController.api_upload);
 
+// @route   GET api/download/:name
+// @desc    Download file from route name
+// @access  Public
+router.get("/download/:name", fileController.api_download);
+
 module.exports = router;

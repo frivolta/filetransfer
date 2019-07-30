@@ -1,8 +1,12 @@
 //Load Schema and Dependencies
 import _ from 'lodash';
+import path from 'path';
 const File = require('../models/File');
+const MongoClient = require('mongodb');
 
 //Setup Const
+const storageDir = path.join(__dirname, '..', 'storage');
+const url = require("../config/keys").mongoURI;
 
 
 // @route   GET api/
@@ -22,6 +26,7 @@ exports.api_upload = async (req, res) => {
     if (Object.keys(files).length > 0) {
         //Loop through object and create array from object
         _.each(files, file => {
+            console.log(JSON.stringify(file))
             let fileObject = {
                 name: _.get(file, 'name'),
                 orginalName: _.get(file, 'originalname'),
@@ -32,20 +37,15 @@ exports.api_upload = async (req, res) => {
             }
             //Push the object to array
             filesArray.push(fileObject);
-            //Insert many files array
-            File.collection.insertMany(filesArray, (err, result) => {
-                if (err) {
-                    return res.status(503).json({
-                        error: {
-                            message: err.toString()
-                        }
-                    })
-                }
-                return res.status.json({
-                    files: filesArray
-                })
-            })
         })
+        //Insert into db
+        MongoClient.connect(url, (err, client) => {
+            // Client returned
+            const db = client.db('filetransfer-app');
+            insertDocuments(db, filesArray, () => {
+                console.log('Insert successful');
+            })
+        });
         res.json({
             error: {
                 message: filesArray
@@ -59,3 +59,35 @@ exports.api_upload = async (req, res) => {
         });
     }
 }
+
+
+// @route   GET api/download/:name
+// @desc    Download file from route name
+// @access  Public
+exports.api_download = (req, res) => {
+    const fileName = req.params.name;
+    const filePath = path.join(storageDir, fileName);
+    console.log(filePath)
+    return res.download(filePath, fileName, (err) => {
+        if (err) {
+            return res.status(404).json({
+                error: {
+                    message: "File not found."
+                }
+            })
+        } else {
+            console.log('File is downloaded.')
+        }
+    })
+
+}
+
+//Helpers
+const insertDocuments = (db, items, callback) => {
+    const collection = db.collection('files');
+    collection.insertMany(items, (error, result) => {
+        if (error) return console.log(error)
+        callback(result);
+    }
+    );
+};
