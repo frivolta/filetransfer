@@ -3,8 +3,21 @@ const router = express.Router();
 import multer from 'multer';
 import path from 'path';
 
-//Load Controller Dependencies
+//Import controller
 const fileController = require('../../controllers/file.controller');
+
+//File storage config
+const storageDir = path.join(__dirname, '../..', 'storage');
+const storageConfig = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, storageDir)
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname))
+  }
+})
+const upload = multer({ storage: storageConfig })
+//End File storage config
 
 // @route   GET api/
 // @desc    Test Api Route
@@ -14,6 +27,6 @@ router.get('/', fileController.api_test);
 // @route   POST api/upload
 // @desc    Upload file route
 // @access  Public
-router.post('/upload', fileController.api_upload)
+router.post("/upload", upload.array('files'), fileController.api_upload);
 
 module.exports = router;
