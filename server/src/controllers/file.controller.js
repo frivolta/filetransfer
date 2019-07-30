@@ -3,6 +3,7 @@ import _ from 'lodash';
 import path from 'path';
 const File = require('../models/File');
 const MongoClient = require('mongodb');
+import mongoose from 'mongoose';
 
 //Setup Const
 const storageDir = path.join(__dirname, '..', 'storage');
@@ -61,14 +62,16 @@ exports.api_upload = async (req, res) => {
 }
 
 
-// @route   GET api/download/:name
-// @desc    Download file from route name
+// @route   GET api/download/:id
+// @desc    Download file from route id
 // @access  Public
-exports.api_download = (req, res) => {
-    const fileName = req.params.name;
-    const filePath = path.join(storageDir, fileName);
-    console.log(filePath)
-    return res.download(filePath, fileName, (err) => {
+exports.api_download = async (req, res) => {
+    const fileId = req.params.id;
+    const collection = await File.findOne({ _id: fileId });
+    const filename = await _.get(collection, 'filename')
+    const filePath = path.join(storageDir, filename);
+    console.log(JSON.stringify("Downloading: ", filePath))
+    return res.download(filePath, filename, (err) => {
         if (err) {
             return res.status(404).json({
                 error: {
