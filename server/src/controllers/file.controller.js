@@ -2,6 +2,7 @@
 import _ from 'lodash';
 import path from 'path';
 const File = require('../models/File');
+const Post = require('../models/Post');
 const MongoClient = require('mongodb');
 import mongoose from 'mongoose';
 
@@ -38,12 +39,21 @@ exports.api_upload = async (req, res) => {
             //Push the object to array
             filesArray.push(fileObject);
         })
+        //Get Post Model data:
+        console.log('Request: ', req.files)
+
         //Insert into db
         MongoClient.connect(url, (err, client) => {
             // Client returned
             const db = client.db('filetransfer-app');
-            insertDocuments(db, filesArray, () => {
-                console.log('Insert successful');
+            insertDocuments(db, filesArray, (result) => {
+                const newPost = {
+                    from: req.body.from,
+                    to: req.body.to,
+                    files: result.insertedIds
+                }
+                Post.create(newPost, (err, res) => console.log(res))
+                console.log('Insert successful', result);
             })
         });
         res.json({

@@ -1,4 +1,7 @@
 /api/node_modules
 /api/package.lock.json
 /app/node_modules
+/server/node_modules
+/server/package.lock.json
+/server/node_modules
 /app/package.lock.json

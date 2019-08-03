@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
+import classNames from 'classnames'
+import { upload } from '../helpers/upload'
 
 export default class HomeForm extends Component {
 
@@ -17,6 +19,7 @@ export default class HomeForm extends Component {
         to: null,
         from: null,
         message: null,
+        files: null
       }
     };
 
@@ -53,7 +56,7 @@ export default class HomeForm extends Component {
         ...this.state.form,
         files: files,
       }
-    });
+    }, this._formValidation(['files'], isValid => console.log('File validation success:', isValid)));
   }
 
   _isEmail(emailAddress) {
@@ -91,6 +94,15 @@ export default class HomeForm extends Component {
           isValid: () => {
             return this._isEmail(form.to);
           }
+        },
+      ],
+
+      files: [
+        {
+          errorMessage: 'File is required',
+          isValid: () => {
+            return form.files.length
+          }
         }
       ]
 
@@ -121,8 +133,12 @@ export default class HomeForm extends Component {
 
   _onSubmit(event) {
     event.preventDefault();
-    this._formValidation(['from', 'to'], (isValid) => {
-      console.log("The form is valid ? ", isValid);
+    this._formValidation(['from', 'to', 'files'], (isValid) => {
+      if (isValid) {
+        upload(this.state.form, (event) => {
+          console.log('upload event', event)
+        })
+      }
     });
   }
 
@@ -136,7 +152,7 @@ export default class HomeForm extends Component {
 
 
   render() {
-    const { form } = this.state;
+    const { form, errors } = this.state;
     const { files } = form;
 
     return (
@@ -166,7 +182,7 @@ export default class HomeForm extends Component {
 
 
               }
-              <div className={'app-file-select-zone'}>
+              <div className={`app-file-select-zone ${errors.files && 'error'}`}>
                 <label htmlFor={'input-file'}>
                   <input onChange={this._onFileAdded} id={'input-file'} type="file" multiple={true} />
                   {
@@ -179,15 +195,15 @@ export default class HomeForm extends Component {
           </div>
           <div className={'app-card-content'}>
             <div className={'app-card-content-inner'}>
-              <div className={'app-form-item'}>
+              <div className={classNames('app-form-item', { 'error': _.get(errors, 'to') })}>
                 <label htmlFor={'to'}>Send to</label>
                 <input onChange={this._onTextChange} value={form.to} name={'to'}
-                  placeholder={'Email address'} type={'text'} id={'to'} />
+                  placeholder={_.get(errors, 'to') ? _.get(errors, 'to') : 'Email address'} type={'text'} id={'to'} />
               </div>
 
-              <div className={'app-form-item'}>
+              <div className={classNames('app-form-item', { 'error': _.get(errors, 'from') })}>
                 <label htmlFor={'from'}>From</label>
-                <input onChange={this._onTextChange} name={'from'} placeholder={'Your email address'}
+                <input onChange={this._onTextChange} name={'from'} placeholder={_.get(errors, 'from') ? _.get(errors, 'from') : 'Your email address'}
                   type={'text'} id={'from'} />
               </div>
 
