@@ -5,7 +5,7 @@ class Header extends Component {
     return (
       <div className="app-header">
         <div className="app-site-info">
-          <h1>SHARE</h1>
+          <h1><i className={'icon-paper-plane'} /> SHARE</h1>
           <div className="site-title">Share Your Files.</div>
           <div className="site-slogan">Secure safe free</div>
         </div>

@@ -2,35 +2,34 @@ import React, { Component } from 'react'
 import _ from 'lodash'
 import classNames from 'classnames'
 import { upload } from '../helpers/upload'
+import PropTypes from 'prop-types'
 
-export default class HomeForm extends Component {
+class HomeForm extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       form: {
         files: [],
-        to: '',
-        from: '',
-        message: ''
+        to: 'friend@gmail.com',
+        from: 'me@gmail.com',
+        message: 'Hey there!'
       },
 
       errors: {
         to: null,
         from: null,
         message: null,
-        files: null
+        files: null,
       }
     };
-
 
     this._onTextChange = this._onTextChange.bind(this);
     this._onSubmit = this._onSubmit.bind(this);
     this._formValidation = this._formValidation.bind(this);
     this._onFileAdded = this._onFileAdded.bind(this);
     this._onFileRemove = this._onFileRemove.bind(this)
-
-
   }
 
 
@@ -43,6 +42,8 @@ export default class HomeForm extends Component {
         files: files
       }
     })
+
+
   }
 
   _onFileAdded(event) {
@@ -50,21 +51,24 @@ export default class HomeForm extends Component {
     _.each(_.get(event, 'target.files', []), (file) => {
       files.push(file);
     });
-    console.log("files added", files);
     this.setState({
       form: {
         ...this.state.form,
         files: files,
       }
-    }, this._formValidation(['files'], isValid => console.log('File validation success:', isValid)));
+    }, () => {
+      this._formValidation(['files'], (isValid) => {
+      });
+    });
   }
 
   _isEmail(emailAddress) {
+
     const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
     return emailRegex.test(emailAddress);
   }
 
-  _formValidation(fields = [], callback) {
+  _formValidation(fields = [], callback = () => { }) {
     let { form, errors } = this.state;
     const validations = {
       from: [
@@ -94,14 +98,13 @@ export default class HomeForm extends Component {
           isValid: () => {
             return this._isEmail(form.to);
           }
-        },
+        }
       ],
-
       files: [
         {
-          errorMessage: 'File is required',
+          errorMessage: 'File is required.',
           isValid: () => {
-            return form.files.length
+            return form.files.length;
           }
         }
       ]
@@ -118,6 +121,7 @@ export default class HomeForm extends Component {
         }
       });
     });
+
     this.setState({
       errors: errors
     }, () => {
@@ -135,8 +139,15 @@ export default class HomeForm extends Component {
     event.preventDefault();
     this._formValidation(['from', 'to', 'files'], (isValid) => {
       if (isValid) {
-        upload(this.state.form, (event) => {
-          console.log('upload event', event)
+        // the form is valid and ready to submit.
+        const data = this.state.form;
+        if (this.props.onUploadBegin) {
+          this.props.onUploadBegin(data);
+        }
+        upload(data, (event) => {
+          if (this.props.onUploadEvent) {
+            this.props.onUploadEvent(event);
+          }
         })
       }
     });
@@ -148,10 +159,12 @@ export default class HomeForm extends Component {
     const fieldValue = event.target.value;
     form[fieldName] = fieldValue;
     this.setState({ form: form });
+
   }
 
 
   render() {
+
     const { form, errors } = this.state;
     const { files } = form;
 
@@ -162,6 +175,7 @@ export default class HomeForm extends Component {
             <div className={'app-card-header-inner'}>
               {
                 files.length ? <div className={'app-files-selected'}>
+
                   {
                     files.map((file, index) => {
 
@@ -177,17 +191,18 @@ export default class HomeForm extends Component {
                       )
                     })
                   }
-
                 </div> : null
-
-
               }
-              <div className={`app-file-select-zone ${errors.files && 'error'}`}>
+
+              <div className={classNames('app-file-select-zone', { 'error': _.get(errors, 'files') })}>
                 <label htmlFor={'input-file'}>
                   <input onChange={this._onFileAdded} id={'input-file'} type="file" multiple={true} />
                   {
-                    files.length ? <span className={'app-upload-description text-uppercase'}>Add more files</span> : <span><span className={'app-upload-icon'} />
-                      <span className={'app-upload-description'}>Drag and drop your files here.</span></span>
+                    files.length ? <span className={'app-upload-description text-uppercase'}>Add more files</span> :
+                      <span>
+                        <span className={'app-upload-icon'}><i className={'icon-picture-streamline'} /> </span>
+                        <span className={'app-upload-description'}>Drag and drop your files here.</span>
+                      </span>
                   }
                 </label>
               </div>
@@ -203,7 +218,7 @@ export default class HomeForm extends Component {
 
               <div className={classNames('app-form-item', { 'error': _.get(errors, 'from') })}>
                 <label htmlFor={'from'}>From</label>
-                <input onChange={this._onTextChange} name={'from'} placeholder={_.get(errors, 'from') ? _.get(errors, 'from') : 'Your email address'}
+                <input value={_.get(form, 'from')} onChange={this._onTextChange} name={'from'} placeholder={_.get(errors, 'from') ? _.get(errors, 'from') : 'Your email address'}
                   type={'text'} id={'from'} />
               </div>
 
@@ -227,3 +242,13 @@ export default class HomeForm extends Component {
     )
   }
 }
+
+
+
+HomeForm.propTypes = {
+  onUploadBegin: PropTypes.func,
+  onUploadEvent: PropTypes.func
+
+};
+
+export default HomeForm;
