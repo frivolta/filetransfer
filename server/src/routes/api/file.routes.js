@@ -34,4 +34,10 @@ router.post("/upload", upload.array('files'), fileController.api_upload);
 // @access  Public
 router.get("/download/:id", fileController.api_download);
 
+// @route   GET api/post/:id
+// @desc    Get post details
+// @access  Public
+router.get("/posts/:id", fileController.api_post_detail);
+
+
 module.exports = router;

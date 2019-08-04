@@ -16,7 +16,7 @@ export const upload = (form, callback = () => { }) => {
   data.append('to', _.get(form, 'to'));
   data.append('from', _.get(form, 'from'));
   data.append('message', _.get(form, 'message'));
-
+  console.log(data);
   const config = {
     onUploadProgress: (event) => {
       console.log("Upload event", event);

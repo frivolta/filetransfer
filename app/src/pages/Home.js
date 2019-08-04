@@ -2,12 +2,14 @@ import React, { Component } from 'react'
 import Header from '../components/Header'
 import HomeForm from "../components/HomeForm";
 import HomeUploading from "../components/HomeUploading";
+import HomeFormSent from "../components/HomeFormSent";
+import _ from 'lodash';
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      componentName: 'HomeForm',
+      componentName: '',
       data: null,
       uploadEvent: null,
     };
@@ -20,10 +22,22 @@ class Home extends Component {
     switch (componentName) {
       case 'HomeUploading':
         return <HomeUploading event={uploadEvent} data={data} />
+      case 'HomeUploadSent':
+        return <HomeFormSent data={data} />
       default:
         return <HomeForm
           onUploadEvent={(event) => {
-            this.setState({ uploadEvent: event });
+            let data = this.state.data;
+            if (_.get(event, 'type') === 'success') {
+              data = _.get(event, 'payload');
+            }
+            this.setState(
+              {
+                data: data,
+                uploadEvent: event,
+                componentName: (_.get(event, 'type') === 'success') ? 'HomeUploadSent' : this.state.componentName,
+              }
+            );
           }}
           onUploadBegin={(data) => {
             this.setState({

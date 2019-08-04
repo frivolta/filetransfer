@@ -77,7 +77,7 @@ exports.api_download = async (req, res) => {
     const collection = await File.findOne({ _id: fileId });
     const filename = await _.get(collection, 'filename')
     const filePath = path.join(storageDir, filename);
-    return res.download(filePath, filename, (err) => {
+    return res.download(filePath, _.get(result, '[0].originalName'), (err) => {
         if (err) {
             return res.status(404).json({
                 error: {
@@ -90,6 +90,27 @@ exports.api_download = async (req, res) => {
             })
         }
     })
+}
+
+// @route   GET api/post/:id
+// @desc    Get post details
+// @access  Public
+
+exports.api_post_detail = async (req, res) => {
+    const postId = req.params.id;
+    let filesArray = [];
+
+    try {
+        const post = await Post.findOne({ _id: postId });
+        const fileIds = await post.files;
+        _.each(fileIds, (value, key) => {
+            filesArray.push(value[key]);
+        })
+        const files = await File.find({ _id: { $in: filesArray } })
+        res.json({ files: files })
+    } catch (err) {
+        res.status(404).json({ error: err })
+    }
 }
 
 //Helpers
