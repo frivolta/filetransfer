@@ -1,69 +1,76 @@
-/** @format */
-
-import http from "http";
-import express from "express";
-import cors from "cors";
-import morgan from "morgan";
-import mongoose from "mongoose";
-import bodyParser from "body-parser";
-import multer from 'multer';
-import AppRouter from "./router";
+import http from 'http';
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import bodyParser from 'body-parser';
+import multer from 'multer'
 import path from 'path';
 
+import { connect } from "./database";
+import AppRouter from './router'
 
-const PORT = 3001;
-const app = express();
 
-//File storage config
+// File storage config
+
 const storageDir = path.join(__dirname, '..', 'storage');
+
 const storageConfig = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, storageDir)
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname))
-  }
-})
-const upload = multer({ storage: storageConfig })
+    destination: (req, file, cb) => {
+        cb(null, storageDir)
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname))
+    }
+});
 
-//End File storage config
+const upload = multer({ storage: storageConfig });
 
+// End file storage config
+
+const PORT = 3002;
+const app = express();
 app.server = http.createServer(app);
 
-app.use(morgan("dev"));
 
-app.use(
-  cors({
+app.use(morgan('dev'));
+
+
+app.use(cors({
     exposedHeaders: "*"
-  })
-);
+}));
 
-app.use(
-  bodyParser.json({
-    limit: "50mb"
-  })
-);
-app.set("root", __dirname);
+app.use(bodyParser.json({
+    limit: '50mb'
+}));
+
+
+app.set('root', __dirname);
 app.set('storageDir', storageDir);
-app.set('upload', upload)
-/**
- * MONGO DB CONNECTION
- */
-//DB Config
-const db = require("../config/keys").mongoURI;
-//Connect to mongoDB
-mongoose
-  .connect(db)
-  .then(() => {
-    console.log("MongoDB Connected: ", db, typeof (db));
-    //Setup Router
-    new AppRouter(app, db);
-  })
-  .catch(err => console.log(err));
+app.set('upload', upload);
 
-//Starting Server
-app.server.listen(process.env.PORT || PORT, () => {
-  console.log(`App is running on port ${app.server.address().port}`);
+
+//Connect to the database.
+
+connect((err, db) => {
+
+    if (err) {
+        console.log("An error connecting to the database", err);
+        throw (err);
+    }
+
+    app.set('db', db);
+
+
+    // init routers.
+    new AppRouter(app);
+
+
+    app.server.listen(process.env.PORT || PORT, () => {
+        console.log(`App is running on port ${app.server.address().port}`);
+    });
+
 });
+
+
 
 export default app;
