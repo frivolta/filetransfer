@@ -3,11 +3,11 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
-import multer from 'multer'
+import multer from 'multer';
 import path from 'path';
 
-import { connect } from "./database";
-import AppRouter from './router'
+import { connect } from './database';
+import AppRouter from './router';
 
 
 // File storage config
@@ -15,12 +15,12 @@ import AppRouter from './router'
 const storageDir = path.join(__dirname, '..', 'storage');
 
 const storageConfig = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, storageDir)
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname))
-    }
+  destination: (req, file, cb) => {
+    cb(null, storageDir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
 });
 
 const upload = multer({ storage: storageConfig });
@@ -36,11 +36,11 @@ app.use(morgan('dev'));
 
 
 app.use(cors({
-    exposedHeaders: "*"
+  exposedHeaders: '*',
 }));
 
 app.use(bodyParser.json({
-    limit: '50mb'
+  limit: '50mb',
 }));
 
 
@@ -49,28 +49,25 @@ app.set('storageDir', storageDir);
 app.set('upload', upload);
 
 
-//Connect to the database.
+// Connect to the database.
 
 connect((err, db) => {
+  if (err) {
+    console.log('An error connecting to the database', err);
+    throw (err);
+  }
 
-    if (err) {
-        console.log("An error connecting to the database", err);
-        throw (err);
-    }
-
-    app.set('db', db);
-
-
-    // init routers.
-    new AppRouter(app);
+  app.set('db', db);
 
 
-    app.server.listen(process.env.PORT || PORT, () => {
-        console.log(`App is running on port ${app.server.address().port}`);
-    });
+  // init routers.
+  new AppRouter(app);
 
+
+  app.server.listen(process.env.PORT || PORT, () => {
+    console.log(`App is running on port ${app.server.address().port}`);
+  });
 });
-
 
 
 export default app;

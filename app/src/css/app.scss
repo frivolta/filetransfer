@@ -1,7 +1,7 @@
-@import "https://fonts.googleapis.com/css?family=Open+Sans:300,400,800";
-@import "reset";
-@import "variable";
-@import "font";
+@import 'https://fonts.googleapis.com/css?family=Open+Sans:300,400,800';
+@import 'reset';
+@import 'variable';
+@import 'font';
 
 body {
   font-family: 'Open Sans', sans-serif;
@@ -9,7 +9,7 @@ body {
   color: $body-text-color;
   font-size: 13px;
 }
-a{
+a {
   color: $primary-color;
 }
 * {
@@ -20,7 +20,7 @@ a{
   max-width: 1000px;
   margin: 0 auto;
 
-  @media(min-width: $screen-md) {
+  @media (min-width: $screen-md) {
     padding: 100px 50px 50px 50px;
   }
 }
@@ -33,20 +33,19 @@ a{
     padding-bottom: 30px;
     text-align: center;
     .app-site-info {
-      color: #FFFFFF;
+      color: #ffffff;
       h1 {
         margin: 0;
         padding: 0;
         font-size: 60px;
         font-weight: 800;
-
       }
       .site-title {
         margin: 20px 0 0 0;
         padding: 0;
         font-size: 50px;
         font-weight: 300;
-        color: rgba(255, 255, 255, .9);
+        color: rgba(255, 255, 255, 0.9);
         @media (max-width: $screen-sm) {
           display: none;
         }
@@ -59,13 +58,11 @@ a{
         padding: 0;
         font-size: 30px;
         font-weight: 300;
-        color: rgba(255, 255, 255, .6);
+        color: rgba(255, 255, 255, 0.6);
       }
     }
-
   }
   .app-content {
-
   }
 
   @media (min-width: $screen-md) {
@@ -83,7 +80,7 @@ a{
 .app-card {
   overflow: hidden;
   position: relative;
-  background: #FFFFFF;
+  background: #ffffff;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
@@ -101,7 +98,8 @@ a{
       padding: 20px;
     }
   }
-  &.app-card-uploading, &.app-card-upload-sent {
+  &.app-card-uploading,
+  &.app-card-upload-sent {
     .app-card-content {
       .app-card-content-inner {
         padding: 40px;
@@ -157,7 +155,8 @@ a{
     font-weight: 400;
     margin: 0 0 8px 0;
   }
-  input[type='text'], textarea {
+  input[type='text'],
+  textarea {
     width: 100%;
     border: 1px solid rgba(224, 224, 224, 1);
     outline: 0 none;
@@ -165,7 +164,8 @@ a{
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    &:focus, :active {
+    &:focus,
+    :active {
       outline: 0 none;
     }
   }
@@ -187,7 +187,7 @@ a{
     font-weight: 800;
     color: $primary-color;
     border: 1px solid $primary-color;
-    background: #FFFFFF;
+    background: #ffffff;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
@@ -195,7 +195,7 @@ a{
     text-transform: uppercase;
     &.primary {
       background: $primary-color;
-      color: #FFFFFF;
+      color: #ffffff;
     }
   }
 }
@@ -204,7 +204,7 @@ a{
   max-height: 150px;
   position: relative;
   overflow-y: auto;
-  background: #FFFFFF;
+  background: #ffffff;
   position: relative;
   margin: -20px -20px 0 -20px;
   padding: 20px;
@@ -216,7 +216,6 @@ a{
       flex-grow: 1;
     }
     .file-action {
-
     }
   }
   .app-file-remove {
@@ -274,14 +273,12 @@ a{
 }
 
 .app-upload-stats {
-
   display: flex;
   flex-direction: row;
   .app-upload-stats-left {
     flex-grow: 1;
   }
   .app-upload-stats-right {
-
   }
 }
 
@@ -335,7 +332,7 @@ a{
 
 .app-page-download {
   .app-card {
-    @media(min-width: $screen-sm) {
+    @media (min-width: $screen-sm) {
       width: 400px;
     }
     margin: 0 auto;
@@ -344,7 +341,7 @@ a{
 
 .app-top-header {
   text-align: center;
-  color: #FFFFFF;
+  color: #ffffff;
   h1 {
     margin: 0;
     padding: 0;
@@ -396,34 +393,34 @@ a{
         background: $body-text-color;
         border-radius: 50%;
       }
-      &:first-child{
+      &:first-child {
         padding: 0;
-        &:before{
+        &:before {
           display: none;
         }
       }
     }
   }
 }
-.app-download-file-list{
+.app-download-file-list {
   margin: 30px 0;
-  .app-download-file-list-item{
-    border-bottom: 1px solid rgba(227,234,248,1);
+  .app-download-file-list-item {
+    border-bottom: 1px solid rgba(227, 234, 248, 1);
     padding: 10px 5px;
     display: flex;
-    .filename{
+    .filename {
       flex-grow: 1;
     }
-    .download-action{
-      a{
+    .download-action {
+      a {
         color: $primary-color;
         text-decoration: none;
       }
     }
   }
 }
-.app-download-actions{
-  button{
+.app-download-actions {
+  button {
     margin: 10px 0;
   }
 }
