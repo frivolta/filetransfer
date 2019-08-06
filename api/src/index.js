@@ -5,11 +5,16 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import multer from 'multer';
 import path from 'path';
-
+import nodemailer from 'nodemailer';
+import { smtpConfig } from './config';
 import { connect } from './database';
 import AppRouter from './router';
 
 
+// Setup NodeMailer
+
+// End Nodemailer Setup
+const email = nodemailer.createTransport(smtpConfig);
 // File storage config
 
 const storageDir = path.join(__dirname, '..', 'storage');
@@ -27,7 +32,7 @@ const upload = multer({ storage: storageConfig });
 
 // End file storage config
 
-const PORT = 3002;
+const PORT = 3003;
 const app = express();
 app.server = http.createServer(app);
 
@@ -47,6 +52,7 @@ app.use(bodyParser.json({
 app.set('root', __dirname);
 app.set('storageDir', storageDir);
 app.set('upload', upload);
+app.email = email;
 
 
 // Connect to the database.

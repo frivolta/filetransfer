@@ -4,6 +4,8 @@ import { ObjectID } from 'mongodb';
 import { version } from '../package.json';
 import File from './models/file';
 import Post from './models/post';
+import FileArchiver from './archiver';
+import Email from './email';
 
 class AppRouter {
   constructor(app) {
@@ -47,9 +49,6 @@ class AppRouter {
           }
 
 
-          console.log('user request via api/upload with data', req.body, result);
-
-
           const post = new Post(app).initWithObject({
 
             from: _.get(req, 'body.from'),
@@ -60,11 +59,22 @@ class AppRouter {
 
 
           // let save post object to posts collection.
-
           db.collection('posts').insertOne(post, (err, result) => {
             if (err) {
               return res.status(503).json({ error: { message: 'Your upload could not be saved.' } });
             }
+
+            // Implement email sending to user with download link
+            // send email
+            const sendEmail = new Email(app);
+            sendEmail.sendDownloadLink(post, (err, info) => {
+              if (err) {
+                console.log('Error sending email notify downloadl link');
+              } else {
+                console.log('Email info: ', info);
+              }
+            });
+
             return res.json(post);
           });
         });
@@ -100,8 +110,6 @@ class AppRouter {
               },
             });
           }
-
-          console.log('File is downloaded.');
         });
       });
     });
@@ -136,6 +144,57 @@ class AppRouter {
 
           return res.json(result);
         });
+      });
+    });
+
+    // Routing download zip files.
+    app.get('/api/posts/:id/download', (req, res, next) => {
+      const id = _.get(req, 'params.id', null);
+
+
+      this.getPostById(id, (err, result) => {
+        if (err) {
+          return res.status(404).json({ error: { message: 'File not found.' } });
+        }
+
+        const files = _.get(result, 'files', []);
+        const archiver = new FileArchiver(app, files, res).download();
+        return archiver;
+      });
+    });
+  }
+
+  getPostById(id, callback = () => { }) {
+    const app = this.app;
+
+    const db = app.get('db');
+
+
+    let postObjectId = null;
+    try {
+      postObjectId = new ObjectID(id);
+    } catch (err) {
+      return callback(err, null);
+    }
+
+    db.collection('posts').find({ _id: postObjectId }).limit(1).toArray((err, results) => {
+      const result = _.get(results, '[0]');
+
+      if (err || !result) {
+        return callback(err || new Error('File not found.'));
+      }
+
+      const fileIds = _.get(result, 'files', []);
+
+      db.collection('files').find({ _id: { $in: fileIds } }).toArray((err, files) => {
+        if (err || !files || !files.length) {
+          return callback(err || new Error('File not found.'));
+        }
+
+        result.files = files;
+
+
+        return callback(null, result);
       });
     });
   }

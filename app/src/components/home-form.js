@@ -11,9 +11,9 @@ class HomeForm extends Component {
     this.state = {
       form: {
         files: [],
-        to: 'friend@gmail.com',
-        from: 'me@gmail.com',
-        message: 'Hey there!',
+        to: '',
+        from: '',
+        message: '',
       },
 
       errors: {
