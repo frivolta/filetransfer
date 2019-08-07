@@ -18,7 +18,7 @@ class AppRouter {
     const app = this.app;
     const db = app.get('db');
     const uploadDir = app.get('storageDir');
-    const upload = app.get('upload');
+    const upload = app.upload;
 
     // root routing.
     app.get('/', (req, res, next) => res.status(200).json({

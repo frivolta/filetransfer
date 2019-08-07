@@ -9,3 +9,11 @@ export const smtpConfig = {
 };
 
 export const url = 'http://locahost:3000';
+
+export const s3Config = {
+  accessKeyId: 'AKIA4HDPGC2FWGWSQHM7',
+  secretAccessKey: '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',
+};
+export const s3Region = 'eu-west';
+
+export const bucket = 'share-file-app';
