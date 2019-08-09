@@ -6,6 +6,7 @@ import File from './models/file';
 import Post from './models/post';
 import FileArchiver from './archiver';
 import Email from './email';
+import S3 from './s3';
 
 class AppRouter {
   constructor(app) {
@@ -99,18 +100,24 @@ class AppRouter {
           });
         }
 
-        const filePath = path.join(uploadDir, fileName);
+        // Download file from S3 service
+        const file = _.get(result, '[0]');
+        const downloader = new S3(app, res);
 
-        return res.download(filePath, _.get(result, '[0].originalName'), (err) => {
-          if (err) {
-            return res.status(404).json({
+        return downloader.download(file);
 
-              error: {
-                message: 'File not found',
-              },
-            });
-          }
-        });
+        /* const filePath = path.join(uploadDir, fileName);
+
+         return res.download(filePath, _.get(result, '[0].originalName'), (err) => {
+           if (err) {
+             return res.status(404).json({
+
+               error: {
+                 message: 'File not found',
+               },
+             });
+           }
+         }); */
       });
     });
 
