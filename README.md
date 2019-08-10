@@ -1,6 +1,6 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=200px height=200px src="https://imgur.com/a/yVVBGUp" alt="Share Logo"></a>
+ <img width=200px height=200px src="https://i.imgur.com/vvWZZLF.jpg" alt="Share Logo"></a>
 </p>
 
 <h3 align="center">File Transfer v.1.0</h3>
@@ -17,6 +17,9 @@
 
 ## 🧐 About <a name = "about"></a>
 
+<img width="100%" src="https://imgur.com/obJ9kXG.jpg" alt="Share Logo">
+<br/>
+<br/>
 This application let you easily upload and share multiple files with others. Based on MERN stack: MongoDB, Express, React, Node, features Redux and S3.
 The project is structured in two main folders: api, app. The first one manage the server architecture, the second one takes care of the client side.
 The Server is indipendent from the client and the other way around.
